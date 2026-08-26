@@ -1,0 +1,61 @@
+<h1>Календарь Онлайн</h1>
+<div class="calendar">
+  <div class="calendar-header">
+    <div class="calendar-month">Месяц</div>
+    <div class="calendar-year">Год</div>
+  </div>
+  <div class="calendar-days">
+    <span class="calendar-day-name">Пн</span>
+    <span class="calendar-day-name">Вт</span>
+    <!-- ... остальные дни -->
+  </div>
+  <div class="calendar-dates">
+    <span class="calendar-day">1</span>
+    <span class="calendar-day">2</span>
+    <!-- ... остальные числа -->
+  </div>
+</div>
+
+<div class="timer">
+  <div class="timer__item timer__days">00</div>
+  <div class="separator">:</div>
+  <div class="timer__item timer__hours">00</div>
+  <div class="separator">:</div>
+  <div class="timer__item timer__minutes">00</div>
+  <div class="separator">:</div>
+  <div class="timer__item timer__seconds">00</div>
+</div>
+<button onclick="updateTimer()">Старт</button>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+  const deadline = new Date('2025-12-31 23:59:59'); // Точная дата и время
+
+  function updateTimer() {
+    const now = new Date();
+    let distance = deadline - now;
+
+    let days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    // Форматируем секунды, минуты и часы (добавляем ведущий ноль для однозначных чисел)
+    seconds = seconds < 10 ? '0' + seconds : seconds;
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    hours = hours < 10 ? '0' + hours : hours;
+
+    // Обновляем DOM
+    document.querySelector('.timer__seconds').textContent = seconds;
+    document.querySelector('.timer__minutes').textContent = minutes;
+    document.querySelector('.timer__hours').textContent = hours;
+    document.querySelector('.timer__days').textContent = days;
+
+    if (distance < 0) {
+      clearInterval(intervalId);
+      document.querySelector('.timer').innerHTML = 'Просрочено!';
+    }
+  };
+
+  let intervalId = setInterval(updateTimer, 1000);
+});
+</script>
