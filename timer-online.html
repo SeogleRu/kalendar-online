@@ -2,7 +2,7 @@
   <div id="display">00:00:00</div>
 
   <div class="controls">
-    <label>Время (секунды): </label>
+    <label>Время (сек): </label>
     <input type="number" id="secondsInput" value="60" min="1">
     <button onclick="setTime()">Установить</button>
   </div>
@@ -10,47 +10,47 @@
   <div class="controls">
     <button onclick="startTimer()" id="startBtn">Старт</button>
     <button onclick="pauseTimer()" id="pauseBtn" disabled>Пауза</button>
-    <button onclick="resetTimer()">Сброс</button>
+    <button onclick="resetTimer()" class="stop">Сброс</button>
   </div>
 
   <script>
-    let totalSeconds = 60;      // общее время в секундах
-    let remainingSeconds = 60; // сколько осталось
-    let intervalId = null;     // ID интервала
-    let isRunning = false;     // флаг: идёт ли отсчёт
+    let totalSeconds = 60;
+    let remainingSeconds = 60;
+    let intervalId = null;
+    let isRunning = false;
 
     const displayEl = document.getElementById('display');
     const inputEl = document.getElementById('secondsInput');
     const startBtn = document.getElementById('startBtn');
     const pauseBtn = document.getElementById('pauseBtn');
 
-    function formatTime(seconds) {
-      const h = Math.floor(seconds / 3600);
-      const m = Math.floor((seconds % 3600) / 60);
-      const s = seconds % 60;
-      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    function formatTime(s) {
+      const h = Math.floor(s / 3600);
+      const m = Math.floor((s % 3600) / 60);
+      const sec = s % 60;
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
     }
 
     function updateDisplay() {
       displayEl.textContent = formatTime(remainingSeconds);
     }
 
-    // Установить время из поля ввода (без запуска)
+    // Устанавливает время из поля ввода, даже если таймер уже идёт
     function setTime() {
       const val = parseInt(inputEl.value, 10);
       if (isNaN(val) || val < 1) {
-        alert('Введите корректное число секунд (больше 0)');
+        alert('Введите число секунд больше 0');
         return;
       }
+
       totalSeconds = val;
       remainingSeconds = totalSeconds;
       updateDisplay();
-      // Если был запущен — перезапускаем с новым временем
+
+      // Если таймер шёл — сбрасываем интервал и ставим на паузу
       if (isRunning) {
         clearInterval(intervalId);
-        startTimer();
-      } else {
-        // Сбрасываем кнопки
+        isRunning = false;
         startBtn.disabled = false;
         pauseBtn.disabled = true;
       }
@@ -58,6 +58,7 @@
 
     function startTimer() {
       if (remainingSeconds <= 0 || isRunning) return;
+
       isRunning = true;
       startBtn.disabled = true;
       pauseBtn.disabled = false;
@@ -95,7 +96,5 @@
       pauseBtn.disabled = true;
     }
 
-    // Инициализация отображения
-    updateDisplay();
+    updateDisplay(); // Показать начальное время
   </script>
-
