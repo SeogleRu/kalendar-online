@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Чат-Бот Онлайн</title>
+</head>
+<body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<header>
+  <center>
+    <h1>Чат-Бот Онлайн</h1>
+    <hr size="2" width="80%">
+  </center>
+</header>
+
+<main>
+
+  <section>
+    <table border="1" cellpadding="5" cellspacing="0" width="100%" bgcolor="#F0F0F0">
+      <tr>
+        <td>
+          <font size="2" face="Arial, Helvetica, sans-serif">
+            <b>Добро пожаловать в Чат-Бот!</b><br>
+            Напишите сообщение и нажмите "Отправить".<br>
+            Бот отвечает на простые фразы.
+          </font>
+        </td>
+      </tr>
+    </table>
+  </section>
+
+  <br>
+
+  <section>
+    <form id="chatForm" autocomplete="off">
+      <table border="0" cellpadding="2" cellspacing="0" width="100%">
+        <tr>
+          <td width="20%"><font size="2" face="Arial">Вы:</font></td>
+          <td width="80%">
+            <input type="text" id="userInput" name="userInput" size="30" maxlength="200"
+                   required autofocus placeholder="Введите сообщение...">
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2" align="center">
+            <button type="submit">Отправить</button>
+            <button type="reset">Очистить</button>
+          </td>
+        </tr>
+      </table>
+    </form>
+  </section>
+
+  <br>
+
+  <section>
+    <table border="1" cellpadding="5" cellspacing="0" width="100%" bgcolor="#FFFFF0">
+      <tr>
+        <td>
+          <font size="2" face="Arial, Helvetica, sans-serif">
+            <b>История чата:</b>
+          </font>
+          <br><br>
+          <div id="chatHistory" aria-live="polite">
+            <font size="2" face="Arial, Helvetica, sans-serif" color="#000080">
+              [Бот]: Привет! Я Чат-Бот Онлайн. Спроси меня о чём-нибудь.
+            </font>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </section>
+
+</main>
+
+<footer>
+  <center>
+    <font size="1" face="Arial" color="#808080">
+      <hr size="1" width="50%">
+      Работает на всех устройствах.
+    </font>
+  </center>
+</footer>
+
+<script>
+"use strict";
+
+// Ссылки на элементы
+const chatHistory = document.getElementById("chatHistory");
+const chatForm = document.getElementById("chatForm");
+const userInput = document.getElementById("userInput");
+
+// Добавление сообщения в историю
+const addMessage = (sender, message) => {
+  const color = sender === "Бот" ? "#000080" : "#000000";
+  const div = document.createElement("div");
+  div.innerHTML =
+    `<font size="2" face="Arial, Helvetica, sans-serif" color="${color}">` +
+    `[${sender}]: ${escapeHtml(message)}</font>`;
+  chatHistory.appendChild(div);
+  // Прокрутка вниз
+  window.scrollTo(0, document.body.scrollHeight);
+};
+
+// Экранирование HTML (защита от вставки тегов)
+const escapeHtml = (str) => {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+};
+
+// Логика ответов бота
+const getBotResponse = (userMessage) => {
+  const msg = userMessage.toLowerCase();
+
+  if (/(привет|здравствуй|хай|hello|hi)/.test(msg)) {
+    return "Привет! Как дела?";
+  }
+  if (/(как дела|как ты|как жизнь)/.test(msg)) {
+    return "У меня всё хорошо! А у тебя?";
+  }
+  if (/(как тебя зовут|твоё имя|твое имя|кто ты)/.test(msg)) {
+    return "Я  Чат-Бот Онлайн. Можешь звать меня Бот.";
+  }
+  if (/(пока|до свидания|бай|bye)/.test(msg)) {
+    return "До свидания! Хорошего дня!";
+  }
+  if (/(спасибо|благодарю|thanks)/.test(msg)) {
+    return "Пожалуйста! Рад помочь.";
+  }
+  if (/(время|час|который час)/.test(msg)) {
+    const now = new Date();
+    const hh = String(now.getHours()).padStart(2, "0");
+    const mm = String(now.getMinutes()).padStart(2, "0");
+    return `Сейчас примерно ${hh}:${mm} (по времени устройства).`;
+  }
+  if (/погода/.test(msg)) {
+    return "Я не знаю погоду, я же простой бот. Посмотри в окно!";
+  }
+  if (/(анекдот|шутка|рассмеши)/.test(msg)) {
+    return "Программист ставит на ночь два стакана: один с водой — если захочет пить, другой пустой — если не захочет.";
+  }
+  if (/(люблю|love)/.test(msg)) {
+    return "Я тоже тебя люблю! :)";
+  }
+  if (/(помощь|help|что умеешь)/.test(msg)) {
+    return "Можешь спросить: привет, как дела, кто ты, время, анекдот, пока, спасибо.";
+  }
+
+  const fallback = [
+    "Интересно! Расскажи ещё что-нибудь.",
+    "Я пока не умею отвечать на это. Попробуй другую фразу.",
+    "Понятно. А что ты ещё любишь?",
+    "Хм, я простой бот. Спроси что-нибудь попроще.",
+    "Давай поговорим о чём-нибудь другом?"
+  ];
+  return fallback[Math.floor(Math.random() * fallback.length)];
+};
+
+// Обработка отправки формы
+chatForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  const text = userInput.value.trim();
+  if (!text) {
+    userInput.focus();
+    return;
+  }
+
+  addMessage("Вы", text);
+  userInput.value = "";
+  userInput.focus();
+
+  const reply = getBotResponse(text);
+
+  // Небольшая задержка для реалистичности
+  setTimeout(() => {
+    addMessage("Бот", reply);
+  }, 300);
+});
+
+// Сброс формы: очищаем поле и возвращаем фокус
+chatForm.addEventListener("reset", () => {
+  setTimeout(() => userInput.focus(), 0);
+});
+</script>
+
+</body>
+  </html>
